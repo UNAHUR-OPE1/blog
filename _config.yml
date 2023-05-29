@@ -20,7 +20,7 @@ timezone:  America/Argentina/Buenos_Aires
 
 title: OPE1 @ UNAHUR # the main title
 
-tagline: Contenido complementario # it will display as the sub-title
+tagline: Contenido complementario de la materia # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   Documentos complementarios de la materia
