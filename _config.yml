@@ -10,20 +10,20 @@ baseurl: ""
 # The language of the webpage › http://www.lingoes.net/en/translator/langcode.htm
 # If it has the same name as one of the files in folder `_data/locales`, the layout language will also be changed,
 # otherwise, the layout language will use the default value of 'en'.
-lang: en
+lang: es
 
 # Change to your timezone › http://www.timezoneconverter.com/cgi-bin/findzone/findzone
-timezone:
+timezone:  America/Argentina/Buenos_Aires
 
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Chirpy # the main title
+title: OPE1 @ UNAHUR # the main title
 
-tagline: A text-focused Jekyll theme # it will display as the sub-title
+tagline: Contenido complementario # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
-  A minimal, responsive and feature-rich Jekyll theme for technical writing.
+  Documentos complementarios de la materia
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: "https://UNAHUR-OPE1.github.io/blog"
@@ -80,7 +80,7 @@ theme_mode: # [light|dark]
 img_cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar:
+avatar: https://avatars.githubusercontent.com/u/129763946?s=96&v=4
 
 # boolean type, the global switch for TOC in posts.
 toc: true
