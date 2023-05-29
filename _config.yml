@@ -20,7 +20,7 @@ timezone:  America/Argentina/Buenos_Aires
 
 title: OPE1 @ UNAHUR # the main title
 
-tagline: Contenido complementario # it will display as the sub-title
+tagline: Contenido complementario de la materia # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   Documentos complementarios de la materia
@@ -146,7 +146,7 @@ defaults:
       toc: true # Display TOC column in posts.
       # DO NOT modify the following parameter unless you are confident enough
       # to update the code of all other post links in this project.
-      permalink: /:categories/:year/:month/:day/:title:output_ext
+      permalink: /posts/:title/
   - scope:
       path: _drafts
     values:
