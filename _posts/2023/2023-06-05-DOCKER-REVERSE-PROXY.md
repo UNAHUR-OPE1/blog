@@ -16,7 +16,7 @@ Se puede uitilizar para:
 - Enrutamiento
 
 ## Redes en docker compose
-
+![Sincronizacion](/assets/img/2023/docker-reverse-rpoxy/reverse-proxy.drawio.svg)
 
 
 ## Fuentes de informacion
