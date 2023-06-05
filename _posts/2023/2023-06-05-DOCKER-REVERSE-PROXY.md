@@ -18,6 +18,7 @@ Se puede uitilizar para:
 ## Redes en docker compose
 ![Sincronizacion](/assets/img/2023/docker-reverse-rpoxy/reverse-proxy.drawio.svg)
 
+{% drawio path="/assets/img/2023/docker-reverse-rpoxy/reverse-proxy.drawio" page_number=1 height=400 %}
 
 ## Fuentes de informacion
 
