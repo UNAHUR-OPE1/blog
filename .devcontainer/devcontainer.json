@@ -8,7 +8,8 @@
       "settings": {},
       "extensions": [
         "rebornix.Ruby",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "hediet.vscode-drawio"
       ]
     }
   },
