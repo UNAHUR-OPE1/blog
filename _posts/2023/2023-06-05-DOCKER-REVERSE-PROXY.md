@@ -2,7 +2,7 @@
 
 title: Docker Compose Reverse Proxy
 date: 2023-05-29 00:00:00 -300
-published: false
+published: true
 categories: [ docker,docker-compose,nginx, proxy]
 tags: []
 mermaid: true
@@ -209,9 +209,9 @@ Siguiendo los pasos
 - Configurar el routing de NGINX mediante el archivo de configuracion [nginx.conf](https://www.nginx.com/resources/wiki/start/topics/examples/full/)
 
 - Revisar la configuración de los servicios detras del proxy si requieren indicarle el path donde estan hosteados
-  
+
   - Grafana: necesita una modificacion en su archivo de configuracion, `grafana.ini` para que use el subpath `/grafana/`
-    
+
     ```ini
     [server]
     root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/
@@ -255,8 +255,8 @@ Hasta este punto los scripts están generado pero nginx. Debemos seguir realizan
 1. Modificar el docker compose para exponer el puerto 443 (utilizado en HTTPS), conectar el contenedor al volumen que con los certificados generados y una dependencia del servicio que genera los certificados para que nginx solo inicie cuando los certificados están listos. [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/31528b74d146a9dc48c901927ad4c693b5d3655f#diff-3fde9d1a396e140fefc7676e1bd237d67b6864552b6f45af1ebcc27bcd0bb6e9)
 
 2. Modificar la configuración de nginx que utilice ssl, el puerto 443 , los certificados e incluye un redirect por si el usuario ingresa por http [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/31528b74d146a9dc48c901927ad4c693b5d3655f#diff-eb810c54827c4ed2c2e3c2ca55d380882f21dda070517e73a95231a084344f5b)
-   
-   
+
+
 
 > Se puede observar que la implementación de TLS solo modifica al proxy. Esto es una gran ventaja per recuerden que un proxy es un único punto de falla. Falla el proxy, falla todo lo que esta detrás.
 > {: .prompt-info }
