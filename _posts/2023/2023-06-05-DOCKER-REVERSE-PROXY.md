@@ -240,12 +240,12 @@ openssl req -x509 -newkey rsa:2048  -days 3650 -nodes \
 > En ambientes productivos se debe adquirir un certificado en una entidad certificante (CA) valida. Dicho certificado tiene un costo que puede variar según sus características. Incluso puede incluir una verificación por parte de la entidad
 > {: .prompt-warn }
 
-Pero el hecho de poner un certificado en el repositorio de codigo NO ES UNA BUENA PRACTICA. Asi que procederemos a empaquetar la generacion del certificado en un contenedor que genera los certificados en un volumen compartido con NGINX.
+Pero el hecho de poner un certificado en el repositorio de codigo NO ES UNA BUENA PRACTICA. Así que procederemos a empaquetar la generación del certificado en un contenedor que genera los certificados en un volumen compartido con NGINX.
 
 A fines prácticos los pasos realizados son
 
 1. Generar una imagen llamada `script-runner` que ejecute script de shell. [ver](https://github.com/UNAHUR-OPE1/iot/commit/576e369ab19e8c629fce5456d679f9f23c5bf927)
-2. Hacer un shell script que genere los certificados necesarios, dicho script debe se idempoente [commit](https://github.com/UNAHUR-OPE1/iot/commit/ae292e21a59cb6c4cfe55cb56a6b2dc9a4053f20#diff-1ef0f326b3c5ec2b3181fa3e90e4f15dfe778e28935114f735d110ab73fd2f65)
+2. Hacer un shell script que genere los certificados necesarios, dicho script debe se idempotente [commit](https://github.com/UNAHUR-OPE1/iot/commit/ae292e21a59cb6c4cfe55cb56a6b2dc9a4053f20#diff-1ef0f326b3c5ec2b3181fa3e90e4f15dfe778e28935114f735d110ab73fd2f65)
 3. Modificar el docker-compose [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/ae292e21a59cb6c4cfe55cb56a6b2dc9a4053f20#diff-3fde9d1a396e140fefc7676e1bd237d67b6864552b6f45af1ebcc27bcd0bb6e9):
    - Incorporar un contenedor de script-runner que ejecute el script del paso anterior
    - Incorporar un volumen donde generar los certificados
@@ -254,9 +254,7 @@ Hasta este punto los scripts están generado pero nginx. Debemos seguir realizan
 
 1. Modificar el docker compose para exponer el puerto 443 (utilizado en HTTPS), conectar el contenedor al volumen que con los certificados generados y una dependencia del servicio que genera los certificados para que nginx solo inicie cuando los certificados están listos. [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/31528b74d146a9dc48c901927ad4c693b5d3655f#diff-3fde9d1a396e140fefc7676e1bd237d67b6864552b6f45af1ebcc27bcd0bb6e9)
 
-2. Modificar la configuracion de nginx que utilice ssl, el puerto 443 , los certificados e incluye un redirect por si el usuario ingresa por http [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/31528b74d146a9dc48c901927ad4c693b5d3655f#diff-eb810c54827c4ed2c2e3c2ca55d380882f21dda070517e73a95231a084344f5b)
-   
-   
+2. Modificar la configuración de nginx que utilice ssl, el puerto 443 , los certificados e incluye un redirect por si el usuario ingresa por http [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/31528b74d146a9dc48c901927ad4c693b5d3655f#diff-eb810c54827c4ed2c2e3c2ca55d380882f21dda070517e73a95231a084344f5b)
    
    
 
@@ -272,3 +270,5 @@ Hasta este punto los scripts están generado pero nginx. Debemos seguir realizan
 - [Docker: Networking in Compose](https://docs.docker.com/compose/networking/)
 
 - [NGINX Begginers Guide](http://nginx.org/en/docs/beginners_guide.html)
+
+- [Internet Society: Networks & Trust Introduction to PKIs & CAs](https://www.internetsociety.org/wp-content/uploads/2017/03/Networks-Trust-Introduction-to-PKIs-and-CAs-1.pdf)
