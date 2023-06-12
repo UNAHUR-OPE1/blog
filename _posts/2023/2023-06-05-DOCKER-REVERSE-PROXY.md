@@ -178,7 +178,9 @@ Commercial support is available at
 ```
 
 
-Esta distincion es importante por que la idea es que el unico camino a los servicios sea a travez del proxy. Si los puertos de los servicios quedan expuestos directamente se puede hacerle un bypass al proxy. Cuando se implementa un proxy lo unico que esta expuesto o "mapeado" es el proxy.
+> Esta distincion es importante por que la idea es que el unico camino a los servicios sea a travez del proxy. Si los puertos de los servicios quedan expuestos directamente se puede hacerle un bypass al proxy. Cuando se implementa un proxy lo unico que esta expuesto o "mapeado" es el proxy.
+{: .prompt-info }
+
 
 
 
@@ -189,7 +191,7 @@ En este ejemplo usaremos [NGINX](https://www.nginx.com/) como proxy-reverso. Hay
 
 ![DIAGRAMA SIN REVERSE PROXY](/assets/img/2023/docker-reverse-proxy/no-proxy.drawio.svg)
 
-![DIAGRAMA CON REVERSE PROXY](/assets/img/2023/docker-reverse-proxy/reverse-proxy.drawio.svg)
+![DIAGRAMA CON REVERSE PROXY](/assets/img/2023/docker-reverse-proxy/http-reverse-proxy.drawio.svg)
 
 Siguiendo los pasos
 - Cambiamos ports por expose
@@ -204,16 +206,53 @@ Siguiendo los pasos
   serve_from_sub_path = true
   ```
 
-## PROXY + Docker-Compose +tls
+> Este ejemplo utiliza los dominios `iot.localdev.me` e `influxdb.localdev.me`. `*iot*.localdev.me` Es un dominio especial creado por Amazon y apunta a las IP `127.0.0.1` , tambien conocida como localhost. Apunta a nuestra propia PC, por algo denominado loopback adapter, una placa de red virtual en nuestra PC, muy util para comunicacion entre probesos. Esto nos da lugar para jugar con la configuracion de NGINX y hacer que dependiendo del domino entremos a grafana o influxdb. Otra herramienta es usar el subpath, pero requiere que el software detras del proxy lo soporte.
+{: .prompt-info }
 
+
+**EJEMPLO DE GITHUB:** El ejemplo IOT tiene una rama con las modificaciones para llegar a este punto https://github.com/UNAHUR-OPE1/iot/tree/feature/proxy-http
+
+
+
+## PROXY + Docker-Compose + TLS
+
+![DIAGRAMA CON REVERSE PROXY + TLS](/assets/img/2023/docker-reverse-proxy/https-reverse-proxy.drawio.svg)
+
+Como vimos en clase para TLS requiere la gneracion de una clave publica y una clave privada por cada dominio. Dichas claves son certificados.
+
+En nuestro caso los dominios son `iot.localdev.me` e `influxdb.localdev.me`. Para este ejemplo usaremos certificados auto-firmados o _self-signed_ que son utiles para propositos de desarrollo. COn un programa llamado `openssl` se puede emitir el certificado. En este ejemplo para `iot.localdev.me.crt`
+
+```bash
+openssl req -x509 -newkey rsa:2048  -days 3650 -nodes \
+    -keyout iot.localdev.me.key -out iot.localdev.me.crt -subj "/CN=iot.localdev.me" \
+    -addext "subjectAltName=DNS:iot.localdev.me"
+```
+> En ambientes productivos se debe adquirir un certificado en una entidad certificante (CA) valida. Dicho certificado tiene un costo que puede variar segun sus caracteristicas. Incluso puede incluir una verificaicon por parte de la entidad
+{: .prompt-warn }
+
+Pero el hecho de poner un certificado en el repositorio de codigo NO ES UNA BUENA PRACTICA. Asi que procederemos a empaquetar la generacion del certificado en un contenedor que genera los certificados en un volumen compartido con NGINX.
+
+A fines practicos los pasos realizados son
+1. Generar una imagen llamada `script-runner` que ejecute script de shell. [ver](https://github.com/UNAHUR-OPE1/iot/commit/576e369ab19e8c629fce5456d679f9f23c5bf927)
+1. Hacer un shell script que genere los certificados necesarios, dicho script debe se idempoente [commit](https://github.com/UNAHUR-OPE1/iot/commit/ae292e21a59cb6c4cfe55cb56a6b2dc9a4053f20#diff-1ef0f326b3c5ec2b3181fa3e90e4f15dfe778e28935114f735d110ab73fd2f65)
+1. Modificar el docker-compose [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/ae292e21a59cb6c4cfe55cb56a6b2dc9a4053f20#diff-3fde9d1a396e140fefc7676e1bd237d67b6864552b6f45af1ebcc27bcd0bb6e9):
+  - Incorporar un contenedor de script-runner que ejecute el script del paso anterior
+  - Incorporar un volumen donde generar los certificados
+
+Hasta este punto los scripts estan generado pero nginx. Debemos seguir realizando cambios
+1. Modificar el docker compose para exponer el puerto 443 (utilizado en HTTPS), conectar el contenedor al volumen que con lso certificados generados y una dependencia del servicio que genera los certificados para que nginx solo inicie cuando los certificados estan listos. [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/31528b74d146a9dc48c901927ad4c693b5d3655f#diff-3fde9d1a396e140fefc7676e1bd237d67b6864552b6f45af1ebcc27bcd0bb6e9)
+
+2. Modificar la configuracion de nginx que utilice ssl, el puerto 443 , los certificados e incluye un redirect por si el usuario ingresa por http [ver commit](https://github.com/UNAHUR-OPE1/iot/commit/31528b74d146a9dc48c901927ad4c693b5d3655f#diff-eb810c54827c4ed2c2e3c2ca55d380882f21dda070517e73a95231a084344f5b)
+
+> Se peude observar que la implementacion de TLS solo modifica al proxy. Esto es una gran ventaja per recuerden qeu un proxy es un unico punto de falla. Falla el proxy, falla todo lo que esta detras.
+{: .prompt-info }
 
 ## Fuentes de informacion
 
-### Linkss
-- https://httpd.apache.org/docs/2.0/mod/mod_proxy.html#forwardreverse
+- [Apache: Forward and reverse proxy](https://httpd.apache.org/docs/2.0/mod/mod_proxy.html#forwardreverse)
 
 - [Docker: Network Drivers](https://docs.docker.com/network/drivers/)
 
 - [Docker: Networking in Compose](https://docs.docker.com/compose/networking/)
 
-### Videos
+- [NGINX Begginers Guide](http://nginx.org/en/docs/beginners_guide.html)
